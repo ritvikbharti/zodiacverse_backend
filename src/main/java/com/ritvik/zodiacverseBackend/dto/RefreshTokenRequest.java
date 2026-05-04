@@ -1,5 +1,6 @@
 package com.ritvik.zodiacverseBackend.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -7,7 +8,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponse {
-    private String accessToken;
+public class RefreshTokenRequest {
+
+    @NotBlank(message = "Refresh token is required")
     private String refreshToken;
 }

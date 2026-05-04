@@ -2,17 +2,16 @@ package com.ritvik.zodiacverseBackend.dto;
 
 import lombok.*;
 
-import java.util.UUID;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
-    private UUID id;
+public class UpdateProfileRequest {
     private String fullName;
-    private String email;
     private String phone;
-    private String role;
+    private LocalDate dateOfBirth;
+    private String profileImageUrl;
 }

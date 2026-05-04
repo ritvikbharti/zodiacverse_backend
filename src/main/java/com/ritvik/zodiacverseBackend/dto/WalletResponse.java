@@ -2,6 +2,7 @@ package com.ritvik.zodiacverseBackend.dto;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
@@ -9,10 +10,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+public class WalletResponse {
     private UUID id;
-    private String fullName;
-    private String email;
-    private String phone;
-    private String role;
+    private BigDecimal balance;
 }

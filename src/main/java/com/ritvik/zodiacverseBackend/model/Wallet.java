@@ -3,42 +3,29 @@ package com.ritvik.zodiacverseBackend.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
+@Table(name = "wallets")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Wallet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
-    private String fullname;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(unique = true)
-    private String phone;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
-
-    private LocalDate dateOfBirth;
-
-    private String profileImageUrl;
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal balance;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -47,7 +34,8 @@ public class User {
 
     @PrePersist
     public void onCreate() {
-        if (createdAt == null) createdAt = LocalDateTime.now();
+        if (balance == null) balance = BigDecimal.ZERO;
+        createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
 
