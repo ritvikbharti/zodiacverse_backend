@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-
+import com.ritvik.zodiacverseBackend.service.EmailService;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -27,6 +27,8 @@ public class AuthService {
     private final RefreshTokenRepo refreshTokenRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final EmailService emailService; //INJECT
+
 
     @Value("${app.jwt.refresh-expiration-ms}")
     private long refreshExpirationMs;
@@ -52,6 +54,8 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+
+        emailService.sendWelcomeEmail(user.getEmail(), user.getFullname());
 
         return generateTokens(user);
     }
