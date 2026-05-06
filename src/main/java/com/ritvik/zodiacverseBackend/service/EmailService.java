@@ -1,4 +1,4 @@
-// ✅ Change this line — match YOUR project's package
+//  Change this line — match YOUR project's package
 package com.ritvik.zodiacverseBackend.service;
 
 import jakarta.mail.MessagingException;
@@ -98,9 +98,9 @@ public class EmailService {
             """.formatted(fullName.split(" ")[0], reportName, clientUrl),
                     true);
             mailSender.send(message);
-            log.info("✅ Report ready email sent to {}", toEmail);
+            log.info(" Report ready email sent to {}", toEmail);
         } catch (MessagingException e) {
-            log.error("❌ Report email failed for {}: {}", toEmail, e.getMessage());
+            log.error(" Report email failed for {}: {}", toEmail, e.getMessage());
         }
     }
 
@@ -123,9 +123,9 @@ public class EmailService {
             """.formatted(fullName.split(" ")[0]),
                     true);
             mailSender.send(message);
-            log.info("✅ Password changed email sent to {}", toEmail);
+            log.info(" Password changed email sent to {}", toEmail);
         } catch (MessagingException e) {
-            log.error("❌ Password email failed for {}: {}", toEmail, e.getMessage());
+            log.error(" Password email failed for {}: {}", toEmail, e.getMessage());
         }
     }
 }

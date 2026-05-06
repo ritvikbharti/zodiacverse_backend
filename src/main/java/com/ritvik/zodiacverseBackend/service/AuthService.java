@@ -28,6 +28,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final EmailService emailService; //INJECT
+    private final NotificationService notificationService; // ✅ ADD THIS
+
 
 
     @Value("${app.jwt.refresh-expiration-ms}")
@@ -56,6 +58,7 @@ public class AuthService {
         userRepository.save(user);
 
         emailService.sendWelcomeEmail(user.getEmail(), user.getFullname());
+        notificationService.notifyWelcome(user);                            // ✅ ADD THIS LINE
 
         return generateTokens(user);
     }
@@ -69,6 +72,8 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid email or password");
         }
+        notificationService.notifyWelcome(user);                            // ✅ ADD THIS LINE
+//        emailService.sendWelcomeEmail(user.getEmail(), user.getFullname());
 
         return generateTokens(user);
     }

@@ -28,6 +28,7 @@ public class ReportService {
     private final UserRepo userRepo;
     private final WalletService walletService;
     private final ReportContentGenerator contentGenerator;
+    private final NotificationService notificationService; // ✅ ADD
 
     // Report prices
     private static final Map<ReportType, BigDecimal> PRICES = Map.of(
@@ -84,14 +85,19 @@ public class ReportService {
                 .build();
 
         reportRepo.save(report);
+
+        //  Notify user — report is ready
+        notificationService.notifyReportReady(user, title);
+
         return toDto(report);
     }
 
     public Page<ReportResponse> list(String email, int page, int size) {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return reportRepo.findByUserIdOrderByCreatedAtDesc(user.getId(), PageRequest.of(page, size))
-                .map(this::toDto);
+        return reportRepo.findByUserIdOrderByCreatedAtDesc(
+                user.getId(), PageRequest.of(page, size)
+        ).map(this::toDto);
     }
 
     public Report getEntity(String email, UUID id) {

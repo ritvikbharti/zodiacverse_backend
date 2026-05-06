@@ -1,4 +1,4 @@
-// model/ReportType.java
+
 package com.ritvik.zodiacverseBackend.model;
 
 public enum ReportType {

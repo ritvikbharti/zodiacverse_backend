@@ -71,18 +71,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
-                                    email,  // ✅ principal = email string
+                                    email,  //  principal = email string
                                     null,
                                     List.of(new SimpleGrantedAuthority(
                                             "ROLE_" + user.getRole().name()))
                             );
 
-                    // ✅ DO NOT call WebAuthenticationDetailsSource here
+                    //  DO NOT call WebAuthenticationDetailsSource here
                     // Set User entity directly as details
-                    authToken.setDetails(user); // ✅ set AFTER constructor
+                    authToken.setDetails(user); // set AFTER constructor
 
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    log.info("✅ Authenticated user: {}", email);
+                    log.info(" Authenticated user: {}", email);
 
                 } else {
                     log.warn("User from token not found in DB: {}", email);

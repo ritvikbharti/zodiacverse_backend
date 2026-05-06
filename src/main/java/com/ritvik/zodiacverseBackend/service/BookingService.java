@@ -24,6 +24,7 @@ public class BookingService {
     private final AstrologerRepo astrologerRepo;
     private final UserRepo userRepo;
     private final WalletService walletService;
+    private final NotificationService notificationService; //  ADD
 
     @Transactional
     public BookingResponse create(String email, CreateBookingRequest req) {
@@ -42,13 +43,13 @@ public class BookingService {
 
         // Calculate amount
         BigDecimal rate = switch (type) {
-            case CHAT -> astrologer.getChatRate();
+            case CHAT  -> astrologer.getChatRate();
             case VOICE -> astrologer.getVoiceRate();
             case VIDEO -> astrologer.getVideoRate();
         };
         BigDecimal amount = rate.multiply(BigDecimal.valueOf(req.getDurationMinutes()));
 
-        // Auto-deduct from wallet (this throws if insufficient balance)
+        // Auto-deduct from wallet
         walletService.withdraw(email,
                 WalletActionRequest.builder()
                         .amount(amount)
@@ -70,13 +71,18 @@ public class BookingService {
                 .build();
 
         Booking saved = bookingRepo.save(booking);
+
+        // Notify user — booking confirmed
+        // Format: "15 Jun 2025 at 10:30"
+        String sessionTime = req.getBookingDate() + " at " + req.getBookingTime();
+        notificationService.notifyBookingConfirmed(user, astrologer.getName(), sessionTime);
+
         return toDto(saved);
     }
 
     public Page<BookingResponse> list(String email, int page, int size) {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
         return bookingRepo.findByUserIdOrderByCreatedAtDesc(
                 user.getId(), PageRequest.of(page, size)
         ).map(this::toDto);
@@ -85,10 +91,8 @@ public class BookingService {
     public BookingResponse get(String email, UUID bookingId) {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
         Booking b = bookingRepo.findByIdAndUserId(bookingId, user.getId())
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
-
         return toDto(b);
     }
 
@@ -119,6 +123,10 @@ public class BookingService {
         b.setStatus(BookingStatus.CANCELLED);
         bookingRepo.save(b);
 
+        //  Notify user — booking cancelled
+        notificationService.notifyBookingCancelled(
+                user, b.getAstrologer().getName(), b.getAmount());
+
         return toDto(b);
     }
 
@@ -128,7 +136,7 @@ public class BookingService {
         return bookingRepo.countByUserId(user.getId());
     }
 
-    // ---------- mapper ----------
+    // ── mapper ────────────────────────────────────────────────
     private BookingResponse toDto(Booking b) {
         return BookingResponse.builder()
                 .id(b.getId())
